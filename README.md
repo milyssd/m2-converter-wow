@@ -1,6 +1,6 @@
 # wxl-equip-extension — AzerothCore / WoW 3.3.5a
 
-Código fuente corregido para el cliente **Windows de 32 bits, build 12340**, integrado en WarcraftXL y utilizado con un servidor AzerothCore. El paquete no contiene una DLL compilada ni modelos de juego.
+Código fuente corregido para el cliente **Windows de 32 bits, compilación 12340**, integrado en WarcraftXL y utilizado con un servidor AzerothCore. El paquete no contiene una DLL compilada ni modelos de juego.
 
 - [Compilación, instalación y compatibilidad con AzerothCore](docs/COMPATIBILIDAD_AZEROTHCORE.md).
 - [Cambios y estado de los reportes](docs/CAMBIOS_Y_PRUEBAS.md).
@@ -12,194 +12,195 @@ Las pruebas automatizadas verifican la lógica y los datos con un motor simulado
 
 ---
 
-A [WarcraftXL](https://github.com/Morfium-G/wxl-core) module that dramatically expands what `ItemDisplayInfo.dbc` can do. It extends M2 model attachment support to every equippable slot, adds a second model channel to all slots, and introduces collection M2 support with per-geoset filtering — all driven entirely by DBC data, with no client code changes per item.
+Un módulo de [WarcraftXL](https://github.com/Morfium-G/wxl-core) que amplía las posibilidades de `ItemDisplayInfo.dbc`. Extiende el uso de modelos M2 adjuntos a las ranuras de equipo compatibles, añade un segundo modelo por ranura e incorpora colecciones M2 con filtros por geoset. Todo se configura mediante datos del DBC, sin cambiar el código del cliente para cada objeto.
 
 ---
 
-## Requirements
+## Requisitos
 
-- **WarcraftXL** installed in the WoW 3.3.5a client directory (`d3d9.dll` proxy + `WarcraftXL.dll`).
-- This module is compiled into `WarcraftXL.dll` automatically — no separate DLL, no additional files needed at runtime.
+- **WarcraftXL** instalado en la carpeta del cliente WoW 3.3.5a (proxy `d3d9.dll` y `WarcraftXL.dll`).
+- Este módulo se compila automáticamente dentro de `WarcraftXL.dll`. No necesita una DLL independiente ni archivos adicionales propios del módulo para ejecutarse.
 
 ---
 
-## Building
+## Compilación
 
-This module is auto-globbed by the WarcraftXL CMake build. To include it, clone or copy the `scripts/wxl-equip-extension/` directory into your WarcraftXL source tree, then build normally:
+CMake detecta automáticamente los archivos del módulo al compilar WarcraftXL. Para incluirlo, clona o copia su carpeta en `scripts/wxl-equip-extension/`, dentro del código fuente de WarcraftXL, y compila de la forma habitual:
 
 ```powershell
 $env:PATH = "C:\path\to\cmake\bin;$env:PATH"
 .\build.ps1
 ```
 
-Deploy the resulting `WarcraftXL.dll` and `d3d9.dll` into your WoW client directory as usual.
+Copia los archivos generados, `WarcraftXL.dll` y `d3d9.dll`, en la carpeta de tu cliente WoW.
 
 ---
 
-## What changes in `ItemDisplayInfo.dbc`
+## Cambios en `ItemDisplayInfo.dbc`
 
-### Slot coverage
+### Ranuras compatibles
 
-Vanilla 3.3.5a only supports `ModelName_1`, `ModelName_2`, `ModelTexture_1`, and `ModelTexture_2` for Head and Shoulder slots. This module extends support to the slots listed below. Slots not listed (Neck, Rings, Trinkets, weapons) are deferred and not yet handled.
+El cliente original 3.3.5a solo admite `ModelName_1`, `ModelName_2`, `ModelTexture_1` y `ModelTexture_2` para cabeza y hombros. Este módulo amplía ese soporte a las ranuras de la tabla siguiente. Las ranuras que no aparecen —cuello, anillos, abalorios y armas— todavía no están implementadas.
 
-| Slot | Model1 | Model2 | Texture1 | Texture2 | Icon2 settings |
+| Ranura | Modelo 1 | Modelo 2 | Textura 1 | Textura 2 | Configuración de Icon2 |
 |------|--------|--------|----------|----------|----------------|
-| Head | was partial | **added** | - | **added** | **added** |
-| Shoulder | was partial | was partial | -  | - | **added** |
-| Shirt | **new** | **new** | **new** | **new** | **new** |
-| Chest | **new** | **new** | **new** | **new** | **new** |
-| Waist | **new** | **new** | **new** | **new** | **new** |
-| Legs | **new** | **new** | **new** | **new** | **new** |
-| Feet | **new** | **new** | **new** | **new** | **new** |
-| Wrist | **new** | **new** | **new** | **new** | **new** |
-| Hands | **new** | **new** | **new** | **new** | **new** |
-| Back | **new** | **new** | **new** | **new** | **new** |
-| Tabard | **new** | **new** | **new** | **new** | **new** |
+| Cabeza | soporte parcial | **añadido** | - | **añadido** | **añadido** |
+| Hombros | soporte parcial | soporte parcial | -  | - | **añadido** |
+| Camisa | **nuevo** | **nuevo** | **nuevo** | **nuevo** | **nuevo** |
+| Pecho | **nuevo** | **nuevo** | **nuevo** | **nuevo** | **nuevo** |
+| Cintura | **nuevo** | **nuevo** | **nuevo** | **nuevo** | **nuevo** |
+| Piernas | **nuevo** | **nuevo** | **nuevo** | **nuevo** | **nuevo** |
+| Pies | **nuevo** | **nuevo** | **nuevo** | **nuevo** | **nuevo** |
+| Muñecas | **nuevo** | **nuevo** | **nuevo** | **nuevo** | **nuevo** |
+| Manos | **nuevo** | **nuevo** | **nuevo** | **nuevo** | **nuevo** |
+| Espalda | **nuevo** | **nuevo** | **nuevo** | **nuevo** | **nuevo** |
+| Tabardo | **nuevo** | **nuevo** | **nuevo** | **nuevo** | **nuevo** |
 
-Each equipped item can now attach up to **two independent M2 models** to any character or NPC wearing that armor.
+Cada objeto equipado puede adjuntar hasta **dos modelos M2 independientes** al personaje o PNJ que lleve esa armadura.
 
 ---
 
-### `ModelName_1` and `ModelName_2` — geoset filtering and collections
+### `ModelName_1` y `ModelName_2`: filtros de geosets y colecciones
 
-The model name fields work as before for simple per-slot models. Two new capabilities are added:
+Los campos de nombre de modelo siguen funcionando como antes para los modelos simples de cada ranura. Se añaden las siguientes posibilidades:
 
-#### Collection M2s
+#### Colecciones M2
 
-Append a colon and a comma-separated list of geoset IDs to activate a collection:
+Añade dos puntos y una lista de IDs de geoset separados por comas para activar una colección:
 
 ```
 chestplate_paladin_tier2.mdx:1201,2301
 ```
 
-- The `:` switches the model lookup path from the per-slot directory (`Item\ObjectComponents\<SlotName>\`) to the shared collections directory (`Item\ObjectComponents\collections\`). This matches the retail pathing, so retail-exported collection M2s can be used without renaming.
-- Geoset IDs listed after `:` are the **only** geosets that will render. All others are hidden. Geoset `0` (always-on geometry) is never filtered out.
-- Combine with **flag `0x40`** (new suffix format) if the collection uses the modern `Race_Gender` naming convention.
+- El carácter `:` cambia la ruta de búsqueda del modelo: pasa de la carpeta de la ranura (`Item\ObjectComponents\<SlotName>\`) a la carpeta compartida de colecciones (`Item\ObjectComponents\collections\`). Esta organización coincide con la del cliente moderno, por lo que permite conservar los nombres de las colecciones exportadas.
+- Los IDs que aparecen después de `:` son los **únicos** geosets que se muestran. Los demás se ocultan. El geoset `0`, correspondiente a la geometría siempre visible, nunca se elimina mediante el filtro.
+- Combínalo con la **bandera `0x40`**, que activa el nuevo formato de sufijo, si la colección utiliza la convención moderna `Race_Gender`.
 
-#### Standard (non-collection) models
+#### Modelos estándar, sin colección
 
-No colon in the name: the lookup path is the normal per-slot directory, suffixed with race and gender as usual (controlled by flags in Icon2, see below).
-
----
-
-### `ModelTexture_1` and `ModelTexture_2`
-
-These columns work exactly as they did for Head and Shoulders. No format change — they are now honoured for all equippable slots.
+Si el nombre no contiene dos puntos, el modelo se busca en la carpeta habitual de su ranura. Se añaden los sufijos de raza y género según las banderas de `Icon2`, que se describen más adelante.
 
 ---
 
-### `Icon2` — attachment point and flag configuration
+### `ModelTexture_1` y `ModelTexture_2`
 
-The `Icon2` field is unused in stock 3.3.5a and is repurposed to configure how Model1 and Model2 are loaded and attached.
+Estas columnas funcionan igual que antes para cabeza y hombros. Su formato no cambia; ahora también se utilizan en las demás ranuras compatibles.
 
-**Format:** `<model1_attachment>:<model2_attachment>:<flags>:<customfolder>`
+---
 
-Attachment IDs are restricted to `0..60`; `4294967295` disables either model channel. Flags accept decimal or `0x` hexadecimal. The optional fourth field selects a relative folder below `Item\ObjectComponents\`. When a custom folder or flag `0x20` is used, hardcoded type-0 texture names inside the M2 are redirected to the model directory in the virtual copy. Original archive files are not modified.
+### `Icon2`: configuración de puntos de unión y banderas
 
-All three parts are optional. Omit a value to keep the slot default. Examples:
+El campo `Icon2` no se utiliza en el cliente original 3.3.5a. Esta extensión lo aprovecha para configurar cómo se cargan y se adjuntan los modelos 1 y 2.
 
-| Icon2 value | Meaning |
+**Formato:** `<model1_attachment>:<model2_attachment>:<flags>:<customfolder>`
+
+Los IDs de los puntos de unión se limitan a `0..60`. El valor `4294967295` desactiva el canal de modelo correspondiente. Las banderas admiten valores decimales o hexadecimales con el prefijo `0x`. El cuarto campo, opcional, selecciona una carpeta relativa dentro de `Item\ObjectComponents\`. Al utilizar una carpeta personalizada o la bandera `0x20`, las rutas de texturas de tipo 0 escritas dentro del M2 se redirigen a la carpeta del modelo en su copia virtual. Los archivos originales no se modifican.
+
+Todos los campos son opcionales. Deja un valor vacío para conservar la configuración predeterminada de la ranura. Ejemplos:
+
+| Valor de Icon2 | Significado |
 |-------------|---------|
-| *(empty)* | Use slot defaults for both attachment points and all flags |
-| `11:55` | Model1 on attachment 11, Model2 on attachment 55 |
-| `:34` | Model2 on attachment 34, Model1 uses slot default |
-| `::6` | Flags = `0x4 \| 0x2` (no gender or race suffix), attachments at defaults |
-| `19:19` | Both models on attachment 19 (Ground_Base) |
-| `::96` | Flags = `0x20 \| 0x40` (subfolder + new suffix format), attachments at defaults |
+| *(vacío)* | Usa los puntos de unión y las banderas predeterminados de la ranura |
+| `11:55` | Modelo 1 en el punto 11 y modelo 2 en el punto 55 |
+| `:34` | Modelo 2 en el punto 34; el modelo 1 conserva el punto predeterminado |
+| `::6` | Banderas = `0x4 \| 0x2`: sin sufijos de género ni raza; puntos de unión predeterminados |
+| `19:19` | Ambos modelos en el punto 19 (`Ground_Base`, base del personaje) |
+| `::96` | Banderas = `0x20 \| 0x40`: subcarpeta y nuevo formato de sufijo; puntos predeterminados |
 
-#### Flags
+#### Banderas
 
-| Flag | Name | Effect |
+| Bandera | Nombre | Efecto |
 |------|------|--------|
-| `0x1` | Reserved | The available post-dispatch event does not suppress built-in character geosets. This flag is not implemented; configure the regular DBC geoset columns separately. |
-| `0x2` | No gender suffix | Do not append `_M` / `_F` to the model path. Use for gender-neutral models. Combine with `0x4` to strip both suffixes entirely (the separator `_` is also skipped). |
-| `0x4` | No race suffix | Do not append the race code to the model path. Combine with `0x2` to strip both suffixes. |
-| `0x8` | Append race to texture | Append the race code to the texture path (textures are normally not suffixed). |
-| `0x10` | Append gender to texture | Append the gender code to the texture path. |
-| `0x20` | Model in subfolder | Place the model in a subfolder named after the base model (without suffixes). For example, `chestplate_paladin_tier2_HuF.mdx` resolves to `Item\ObjectComponents\Chest\chestplate_paladin_tier2\chestplate_paladin_tier2_HuF.mdx`. Texture paths follow the same subfolder. Useful for packaging models for easy distribution and merging. |
-| `0x40` | New suffix format | Use the retail naming convention with an extra underscore between race and gender: `Hu_F` instead of `HuF`. Only applies when the model or texture actually needs suffixing (i.e. `0x2`/`0x4` are not both set, or `0x8`/`0x10` are both set). Lets you use retail-exported models without renaming. |
+| `0x1` | Reservada | El evento disponible se ejecuta después de aplicar los geosets originales del personaje y no los suprime. Esta bandera no está implementada; configura por separado las columnas habituales de geosets del DBC. |
+| `0x2` | Sin sufijo de género | No añade `_M` ni `_F` a la ruta del modelo. Úsala en modelos comunes a ambos géneros. Combínala con `0x4` para omitir ambos sufijos y su separador `_`. |
+| `0x4` | Sin sufijo de raza | No añade el código de raza a la ruta del modelo. Combínala con `0x2` para omitir ambos sufijos. |
+| `0x8` | Añadir raza a la textura | Añade el código de raza a la ruta de la textura. Normalmente las texturas no llevan este sufijo. |
+| `0x10` | Añadir género a la textura | Añade el código de género a la ruta de la textura. |
+| `0x20` | Modelo en subcarpeta | Coloca el modelo en una subcarpeta cuyo nombre coincide con el del modelo base, sin sufijos. Por ejemplo, `chestplate_paladin_tier2_HuF.mdx` se busca en `Item\ObjectComponents\Chest\chestplate_paladin_tier2\chestplate_paladin_tier2_HuF.mdx`. Las texturas usan la misma subcarpeta. Facilita organizar, distribuir y combinar modelos. |
+| `0x40` | Nuevo formato de sufijo | Usa la convención del cliente moderno, con un guion bajo adicional entre raza y género: `Hu_F` en lugar de `HuF`. Solo tiene efecto cuando se añaden ambos sufijos: en el modelo, si no se desactivaron con `0x2` y `0x4`; en la textura, si están activadas `0x8` y `0x10`. Permite conservar los nombres de los modelos exportados. |
 
 ---
 
-## Default attachment points per slot
+## Puntos de unión predeterminados por ranura
 
-If no attachment is specified in `Icon2`, the following defaults apply:
+Si no se indica un punto de unión en `Icon2`, se utilizan los siguientes valores:
 
-| Slot | Model1 attachment | Model2 attachment |
+| Ranura | Punto del modelo 1 | Punto del modelo 2 |
 |------|-------------------|-------------------|
-| HEAD | 11 (Helmet) | 55 (HeadTop) |
-| SHOULDER | 6 (Left Shoulder) | 5 (Right Shoulder) |
-| SHIRT | 34 (Chest) | 34 (Chest) |
-| CHEST | 34 (Chest) | 34 (Chest) |
-| WAIST | 53 (BeltBuckle) | 53 (BeltBuckle) |
-| LEGS | 9 (HipRight) | 10 (HipLeft) |
-| FEET | 47 (LeftFoot) | 48 (RightFoot) |
-| WRIST | 3 (ElbowRight) | 4 (ElbowLeft) |
-| HANDS | 1 (HandRight) | 2 (HandLeft) |
-| BACK | 12 (Back) | 12 (Back) |
-| TABARD | 34 (Chest) | 34 (Chest) |
+| Cabeza | 11 (Casco) | 55 (Parte superior de la cabeza) |
+| Hombros | 6 (Hombro izquierdo) | 5 (Hombro derecho) |
+| Camisa | 34 (Pecho) | 34 (Pecho) |
+| Pecho | 34 (Pecho) | 34 (Pecho) |
+| Cintura | 53 (Hebilla del cinturón) | 53 (Hebilla del cinturón) |
+| Piernas | 9 (Cadera derecha) | 10 (Cadera izquierda) |
+| Pies | 47 (Pie izquierdo) | 48 (Pie derecho) |
+| Muñecas | 3 (Codo derecho) | 4 (Codo izquierdo) |
+| Manos | 1 (Mano derecha) | 2 (Mano izquierda) |
+| Espalda | 12 (Espalda) | 12 (Espalda) |
+| Tabardo | 34 (Pecho) | 34 (Pecho) |
 
 ---
 
-## Sample DBC rows — Judgement armor set
+## Filas de ejemplo del DBC: conjunto de armadura de Sentencia
 
-The examples below are a real two-colour Judgement armor set implemented with this module. Several pieces share a single collection M2 (`plate_raidpaladint2_d_01_chest.mdx`), using geoset filtering to show only the geometry relevant to each slot. Collection models live under `Item\ObjectComponents\collections\palat2\`. The belt uses a standalone per-slot model with the subfolder flag (`0x20`) so it can be packaged in its own directory.
-This is mostly meant to show of the various ways to use it, not how it is best to be used.
+Los siguientes ejemplos muestran un conjunto de Sentencia en dos colores, implementado con este módulo. Varias piezas comparten una colección M2 (`plate_raidpaladint2_d_01_chest.mdx`) y filtran sus geosets para mostrar solo la geometría correspondiente a cada ranura. Los modelos de colección se encuentran en `Item\ObjectComponents\collections\palat2\`. El cinturón utiliza un modelo independiente y la bandera de subcarpeta `0x20` para mantener sus archivos en una carpeta propia.
 
-### Judgement (original)
+Estos ejemplos muestran distintas formas de utilizar el módulo; no pretenden establecer una única configuración recomendada.
 
-| ID | Slot | Model1 | Model2 | ModelTexture1 | ModelTexture2 | Icon1 | Icon2 |
+### Sentencia: color original
+
+| ID | Ranura | Model1 | Model2 | ModelTexture1 | ModelTexture2 | Icon1 | Icon2 |
 |----|------|--------|--------|---------------|---------------|-------|-------|
-| 45888 | Head | `palat2\plate_raidpaladint2_d_01_helm.mdx` | | `palat2\plate_raidpaladint2_d_01_helm_be_m_6037071` | | inv_plate_raidpaladint2_d_01_HELM | |
-| 34258 | Shoulder | `palat2\plate_raidpaladint2_d_01_shoulder_l.mdx` | `palat2\plate_raidpaladint2_d_01_shoulder_r.mdx` | `palat2\plate_raidpaladint2_d_01_shoulder_l_6037139` | `palat2\plate_raidpaladint2_d_01_shoulder_l_6037139` | inv_plate_raidpaladint2_d_01_shoulder | |
-| 33635 | Chest | `palat2\plate_raidpaladint2_d_01_chest.mdx:2201` | | `palat2\plate_raidpaladint2_d_01_chest_be_m_6037063` | | inv_plate_raidpaladint2_d_01_chest | `19` |
-| 33633 | Belt | `plate_raidpaladint2_d_01_belt.mdx` | | `plate_raidpaladint2_d_01_belt_6037176` | | inv_plate_raidpaladint2_d_01_belt | `53::38` |
-| 33634 | Bracers | | | | | inv_plate_raidpaladint2_d_01_bracer | |
-| 33636 | Gloves | `palat2\plate_raidpaladint2_d_01_chest.mdx:401` | `palat2\plate_raidpaladint2_d_01_chest.mdx:2301` | `palat2\plate_raidpaladint2_d_01_chest_be_m_6037063` | `palat2\plate_raidpaladint2_d_01_chest_be_m_6037063` | inv_plate_raidpaladint2_d_01_glove | `19:19` |
-| 33637 | Legs | `palat2\plate_raidpaladint2_d_01_chest.mdx:1301` | | `palat2\plate_raidpaladint2_d_01_chest_be_m_6037063` | | inv_plate_raidpaladint2_d_01_pant | `19` |
-| 33639 | Boots | `palat2\plate_raidpaladint2_d_01_chest.mdx:2001` | | `palat2\plate_raidpaladint2_d_01_chest_be_m_6037063` | | inv_plate_raidpaladint2_d_01_boot | `19` |
+| 45888 | Cabeza | `palat2\plate_raidpaladint2_d_01_helm.mdx` | | `palat2\plate_raidpaladint2_d_01_helm_be_m_6037071` | | inv_plate_raidpaladint2_d_01_HELM | |
+| 34258 | Hombros | `palat2\plate_raidpaladint2_d_01_shoulder_l.mdx` | `palat2\plate_raidpaladint2_d_01_shoulder_r.mdx` | `palat2\plate_raidpaladint2_d_01_shoulder_l_6037139` | `palat2\plate_raidpaladint2_d_01_shoulder_l_6037139` | inv_plate_raidpaladint2_d_01_shoulder | |
+| 33635 | Pecho | `palat2\plate_raidpaladint2_d_01_chest.mdx:2201` | | `palat2\plate_raidpaladint2_d_01_chest_be_m_6037063` | | inv_plate_raidpaladint2_d_01_chest | `19` |
+| 33633 | Cinturón | `plate_raidpaladint2_d_01_belt.mdx` | | `plate_raidpaladint2_d_01_belt_6037176` | | inv_plate_raidpaladint2_d_01_belt | `53::38` |
+| 33634 | Brazales | | | | | inv_plate_raidpaladint2_d_01_bracer | |
+| 33636 | Guantes | `palat2\plate_raidpaladint2_d_01_chest.mdx:401` | `palat2\plate_raidpaladint2_d_01_chest.mdx:2301` | `palat2\plate_raidpaladint2_d_01_chest_be_m_6037063` | `palat2\plate_raidpaladint2_d_01_chest_be_m_6037063` | inv_plate_raidpaladint2_d_01_glove | `19:19` |
+| 33637 | Piernas | `palat2\plate_raidpaladint2_d_01_chest.mdx:1301` | | `palat2\plate_raidpaladint2_d_01_chest_be_m_6037063` | | inv_plate_raidpaladint2_d_01_pant | `19` |
+| 33639 | Botas | `palat2\plate_raidpaladint2_d_01_chest.mdx:2001` | | `palat2\plate_raidpaladint2_d_01_chest_be_m_6037063` | | inv_plate_raidpaladint2_d_01_boot | `19` |
 
-### Judgement Purple (recolor)
+### Sentencia: variante violeta
 
-| ID | Slot | Model1 | Model2 | ModelTexture1 | ModelTexture2 | Icon1 | Icon2 |
+| ID | Ranura | Model1 | Model2 | ModelTexture1 | ModelTexture2 | Icon1 | Icon2 |
 |----|------|--------|--------|---------------|---------------|-------|-------|
-| 42853 | Shoulder | `palat2\plate_raidpaladint2_d_01_shoulder_l.mdx` | `palat2\plate_raidpaladint2_d_01_shoulder_r.mdx` | `palat2\plate_raidpaladint2_d_01_shoulder_purple` | `palat2\plate_raidpaladint2_d_01_shoulder_purple` | INV_Shoulder_37 | |
-| 42863 | Chest | `palat2\plate_raidpaladint2_d_01_chest.mdx:2201` | | `palat2\plate_raidpaladint2_d_01_chest_purple` | | INV_Chest_Plate11 | `19` |
-| 42862 | Belt | `plate_raidpaladint2_d_01_belt.mdx` | | `plate_raidpaladint2_d_01_belt_purple` | | INV_Belt_23 | `53::38` |
-| 42851 | Bracers | | | | | INV_Bracer_13 | |
-| 43639 | Gloves | `palat2\plate_raidpaladint2_d_01_chest.mdx:401` | `palat2\plate_raidpaladint2_d_01_chest.mdx:2301` | `palat2\plate_raidpaladint2_d_01_chest_purple` | `palat2\plate_raidpaladint2_d_01_chest_purple` | INV_Gauntlets_09 | `19:19` |
-| 42859 | Legs | `palat2\plate_raidpaladint2_d_01_chest.mdx:1301` | | `palat2\plate_raidpaladint2_d_01_chest_purple` | | INV_Chest_Cloth_59 | `19` |
-| 42864 | Boots | `palat2\plate_raidpaladint2_d_01_chest.mdx:2001` | | `palat2\plate_raidpaladint2_d_01_chest_purple` | | INV_Boots_Chain_08 | `19` |
+| 42853 | Hombros | `palat2\plate_raidpaladint2_d_01_shoulder_l.mdx` | `palat2\plate_raidpaladint2_d_01_shoulder_r.mdx` | `palat2\plate_raidpaladint2_d_01_shoulder_purple` | `palat2\plate_raidpaladint2_d_01_shoulder_purple` | INV_Shoulder_37 | |
+| 42863 | Pecho | `palat2\plate_raidpaladint2_d_01_chest.mdx:2201` | | `palat2\plate_raidpaladint2_d_01_chest_purple` | | INV_Chest_Plate11 | `19` |
+| 42862 | Cinturón | `plate_raidpaladint2_d_01_belt.mdx` | | `plate_raidpaladint2_d_01_belt_purple` | | INV_Belt_23 | `53::38` |
+| 42851 | Brazales | | | | | INV_Bracer_13 | |
+| 43639 | Guantes | `palat2\plate_raidpaladint2_d_01_chest.mdx:401` | `palat2\plate_raidpaladint2_d_01_chest.mdx:2301` | `palat2\plate_raidpaladint2_d_01_chest_purple` | `palat2\plate_raidpaladint2_d_01_chest_purple` | INV_Gauntlets_09 | `19:19` |
+| 42859 | Piernas | `palat2\plate_raidpaladint2_d_01_chest.mdx:1301` | | `palat2\plate_raidpaladint2_d_01_chest_purple` | | INV_Chest_Cloth_59 | `19` |
+| 42864 | Botas | `palat2\plate_raidpaladint2_d_01_chest.mdx:2001` | | `palat2\plate_raidpaladint2_d_01_chest_purple` | | INV_Boots_Chain_08 | `19` |
 
-**Notes on this set:**
+**Notas sobre el conjunto:**
 
-- **Chest, Legs, Boots, Gloves** all load geosets from the same shared collection file. Attachment point `19` (Ground_Base) places them relative to the character root rather than a specific bone, which works because the collection M2 already has all bone transforms baked in.
-- **Gloves** split into two geoset groups (`401` + `2301`) across Model1 and Model2, both on attachment `19:19`, letting each half of the mesh be textured or toggled independently.
-- **Shoulders** use two separate M2 files for left (`_l`) and right (`_r`) pauldrons — the classic per-shoulder split. No Icon2 config needed; the defaults for the Shoulder slot already assign attachment 6 (left) to Model1 and attachment 5 (right) to Model2.
-- **Belt** uses Icon2 `53::38` — attachment 53 (BeltBuckle), no attachment for Model2, flags `0x26` (`0x20 | 0x04 | 0x02`): model is in its own subfolder, no race or gender suffix appended.
-- **Bracers** have no model entries. The bracer geometry is provided by the character's own skin geosets and does not need an attached M2.
+- **Pecho, piernas, botas y guantes** cargan sus geosets desde el mismo archivo de colección. El punto `19` (`Ground_Base`) los sitúa respecto a la raíz del personaje, en lugar de un hueso concreto. En este ejemplo, la colección M2 ya incorpora las transformaciones de los huesos.
+- **Los guantes** se dividen en dos grupos de geosets, `401` y `2301`, repartidos entre los modelos 1 y 2. Ambos utilizan `19:19`, lo que permite asignar una textura o controlar la visibilidad de cada parte por separado.
+- **Las hombreras** utilizan dos archivos M2: uno para la izquierda (`_l`) y otro para la derecha (`_r`). No necesitan configuración en `Icon2`: los valores predeterminados de la ranura asignan el punto 6, izquierdo, al modelo 1 y el punto 5, derecho, al modelo 2.
+- **El cinturón** utiliza `Icon2` con el valor `53::38`: punto 53, correspondiente a la hebilla, sin un segundo modelo en el ejemplo y con las banderas `0x26` (`0x20 | 0x04 | 0x02`). El modelo está en su propia subcarpeta y no lleva sufijos de raza ni género.
+- **Los brazales** no tienen modelos definidos. Su geometría procede de los geosets propios del personaje y no necesita un M2 adjunto.
 
 ---
 
 ## DBC originales y comprobaciones pendientes
 
-Muchas filas originales de 3.3.5a contienen nombres de modelos sobrantes en armaduras que no los utilizaban. La extensión puede intentar cargarlos y mostrar cajas de modelo ausente. La herramienta [cleanup_itemdisplayinfo.py](tools/README.md) permite revisar y limpiar esos nombres a partir de una exportación completa de `item_template`, conservando displays de armas, cabezas, hombreras y modelos personalizados marcados. No modifica el DBC automáticamente.
+Muchas filas originales de 3.3.5a contienen nombres de modelos sobrantes en armaduras que no los utilizaban. La extensión puede intentar cargarlos y mostrar cajas de modelo ausente. La herramienta [cleanup_itemdisplayinfo.py](tools/README.md) permite revisar y limpiar esos nombres a partir de una exportación completa de `item_template`, conservando los IDs de visualización de armas, cabezas, hombreras y modelos personalizados marcados. No modifica el DBC automáticamente.
 
 Se corrigieron la correspondencia capa/tabardo, la reconstrucción después de quitar equipo, la conservación de referencias compartidas, el equipo pendiente en modelos de interfaz, el aislamiento de filtros/texturas y las rutas de texturas internas. Ver [estado de cada reporte y pruebas pendientes](docs/CAMBIOS_Y_PRUEBAS.md). El resultado visual y la combinación con otros módulos deben comprobarse en el cliente.
 
-Los modelos virtualizados deben ser M2 **MD20/v264** de Wrath, con todas sus skins declaradas disponibles. No se admiten archivos retail MD21 sin convertir. Cada filtro y cada grupo de modelos compartidos admite hasta 16 IDs de geoset. Un sufijo de colección vacío o mal formado se rechaza.
+Los modelos virtualizados deben ser M2 **MD20/v264** de Wrath, con todos sus archivos de tipo .skin declarados disponibles. No se admiten archivos MD21 del cliente moderno sin convertir. Cada filtro y cada grupo de modelos compartidos admite hasta 16 IDs de geoset. Un sufijo de colección vacío o mal formado se rechaza.
 
 ---
 
-## Future Plans
+## Planes futuros
 
-Support all slots, like neck/rings/trinkets/etc...
+Añadir compatibilidad con las ranuras restantes, como cuello, anillos y abalorios.
 
 ---
 
-## Attachment point reference
+## Referencia de puntos de unión
 
-The IDs below are the attachment slots present on retroported HD character models:
+Los siguientes IDs corresponden a puntos de unión presentes en modelos de personaje HD adaptados al cliente antiguo:
 
 ```c
 typedef enum<uint32> {
@@ -267,6 +268,6 @@ typedef enum<uint32> {
 } ATTACHMENT_ID;
 ```
 
-# Settings
+## Configuración
 
-Inside the `wtf\WXL\` folder will be an ini file that allows you to turn logging on and off.
+En la carpeta `wtf\WXL\` se encuentra el archivo INI que permite activar o desactivar el registro de diagnóstico.
