@@ -1,0 +1,43 @@
+Validacion del codigo fuente en Linux, 2026-10-07
+Compilador: g++ 14.2; Python 3.12.
+Manejadores: motor simulado; no valida ABI/SEH/renderizado Windows.
+
+equipment configuration tests passed
+Virtual path regression tests passed
+PASS cape/tabard slot mapping and deferred clear
+PASS shared attachment reference retention
+PASS last-entry detach and cache eviction
+PASS blank display replaces old model
+PASS pending model attaches after scene initialization
+PASS normal models keep their own bone palette
+PASS paperdoll collection palette without world-scene bit
+PASS synchronous same-basename collection groups
+PASS invalidated model defers rebuilding all shared attachment groups
+PASS ordinary texture variants use distinct instances
+PASS same collection on different attachment points uses distinct instances
+PASS short missing UI scene retains pending configuration
+PASS long missing scene expires all character state
+PASS empty missing scene expires immediately
+PASS oversized merged geoset group does not load a partial model
+test_actual_wrath_layout (test_cleanup_itemdisplayinfo.BinaryValidationTests.test_actual_wrath_layout) ... ok
+test_all_string_offsets_are_validated (test_cleanup_itemdisplayinfo.BinaryValidationTests.test_all_string_offsets_are_validated) ... ok
+test_duplicate_display_ids_fail (test_cleanup_itemdisplayinfo.BinaryValidationTests.test_duplicate_display_ids_fail) ... ok
+test_only_two_model_fields_change_and_strings_are_preserved (test_cleanup_itemdisplayinfo.BinaryValidationTests.test_only_two_model_fields_change_and_strings_are_preserved) ... ok
+test_unterminated_string_and_nonempty_offset_zero_fail (test_cleanup_itemdisplayinfo.BinaryValidationTests.test_unterminated_string_and_nonempty_offset_zero_fail) ... ok
+test_wrong_header_or_layout_and_truncated_data (test_cleanup_itemdisplayinfo.BinaryValidationTests.test_wrong_header_or_layout_and_truncated_data) ... ok
+test_csv_accepts_bom_case_and_all_shared_uses (test_cleanup_itemdisplayinfo.CsvAndCliTests.test_csv_accepts_bom_case_and_all_shared_uses) ... ok
+test_default_is_dry_run_with_no_writes (test_cleanup_itemdisplayinfo.CsvAndCliTests.test_default_is_dry_run_with_no_writes) ... ok
+test_existing_symlink_is_never_followed_or_overwritten (test_cleanup_itemdisplayinfo.CsvAndCliTests.test_existing_symlink_is_never_followed_or_overwritten) ... ok
+test_invalid_csv_fails_before_output (test_cleanup_itemdisplayinfo.CsvAndCliTests.test_invalid_csv_fails_before_output) ... ok
+test_invalid_dbc_fails_without_writing (test_cleanup_itemdisplayinfo.CsvAndCliTests.test_invalid_dbc_fails_without_writing) ... ok
+test_missing_or_invalid_selected_id_fails_without_writing (test_cleanup_itemdisplayinfo.CsvAndCliTests.test_missing_or_invalid_selected_id_fails_without_writing) ... ok
+test_write_only_new_file_and_refuse_replacement (test_cleanup_itemdisplayinfo.CsvAndCliTests.test_write_only_new_file_and_refuse_replacement) ... ok
+test_custom_extension_is_protected_until_explicitly_allowed (test_cleanup_itemdisplayinfo.EligibilityTests.test_custom_extension_is_protected_until_explicitly_allowed) ... ok
+test_display_shared_with_weapon_or_original_attachment_is_protected (test_cleanup_itemdisplayinfo.EligibilityTests.test_display_shared_with_weapon_or_original_attachment_is_protected) ... ok
+test_supported_armor_only (test_cleanup_itemdisplayinfo.EligibilityTests.test_supported_armor_only) ... ok
+test_unmapped_empty_and_selection_are_preserved (test_cleanup_itemdisplayinfo.EligibilityTests.test_unmapped_empty_and_selection_are_preserved) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.008s
+
+OK
